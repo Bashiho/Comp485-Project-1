@@ -17,7 +17,6 @@ public class ClientConnection implements Runnable {
    private String usernameInput;
    private String passwordInput;
    private boolean created;
-   private String verifyOutput;
 
    public ClientConnection(Socket socket, List<ClientConnection> clientList) {
       this.socket = socket;
@@ -30,11 +29,8 @@ public class ClientConnection implements Runnable {
       
          input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
          output = new PrintWriter(socket.getOutputStream(), true);
-            // first message from client is the username
          while(created == false){
-            //System.out.println("Enter Username: ");
             usernameInput = input.readLine();
-            //System.out.println("Enter Password: ");
             passwordInput = input.readLine();
             System.out.println(verifySignin(usernameInput, passwordInput));
          }
@@ -61,7 +57,7 @@ public class ClientConnection implements Runnable {
     
    public String verifySignin(String username, String password) {
       String filepath = "data.txt";
-      String delimiter = ",";
+      String delimiter = ", ";
       String currentLine;
       String[] data;
       
@@ -95,6 +91,12 @@ public class ClientConnection implements Runnable {
       Path currentPath = Paths.get("").toAbsolutePath();
       Path data = currentPath.resolve("data.txt");
       String user = username + ", " + password + "\n";
+      // Prevents issue where if client is killed without being signed in, 
+      //it would normally create an entry in data.txt of null, null
+      if(username == null || password == null){
+         System.out.println("Invalid input");
+         return false;
+      }
       try{
          Files.write(data, user.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
          return true;

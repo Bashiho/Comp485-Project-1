@@ -21,9 +21,7 @@ public class Client {
             //If no account exists, creates one
             //If wrong password, allows user to try again but currently doesn't prompt them to, requires fix
             System.out.print("Enter username: ");
-            String username = keyboard.readLine();
             System.out.print("Enter Password: ");
-            String password = keyboard.readLine();
 
             // listen/read messages to and from server
             new Thread(() -> {

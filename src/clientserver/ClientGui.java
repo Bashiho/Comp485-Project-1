@@ -21,6 +21,7 @@ import java.util.Arrays;
 public class ClientGui extends Thread{
 
   final JTextPane jtextFilDiscu = new JTextPane();
+  final JTextPane jtextListUsers = new JTextPane();
   final JTextField jtextInputChat = new JTextField();
   private String oldMsg = "";
   private Thread read;
@@ -48,15 +49,27 @@ public class ClientGui extends Thread{
     jfr.setResizable(false);
     jfr.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-    jtextFilDiscu.setBounds(25, 25, 650, 320);
+    jtextFilDiscu.setBounds(25, 25, 490, 320);
     jtextFilDiscu.setFont(font);
     jtextFilDiscu.setMargin(new Insets(6, 6, 6, 6));
     jtextFilDiscu.setEditable(false);
     JScrollPane jtextFilDiscuSP = new JScrollPane(jtextFilDiscu);
-    jtextFilDiscuSP.setBounds(25, 25, 650, 320);
+    jtextFilDiscuSP.setBounds(25, 25, 490, 320);
 
     jtextFilDiscu.setContentType("text/html");
     jtextFilDiscu.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
+
+    jtextListUsers.setBounds(525, 25, 156, 320);
+    jtextListUsers.setEditable(true);
+    jtextListUsers.setFont(font);
+    jtextListUsers.setMargin(new Insets(6, 6, 6, 6));
+    jtextListUsers.setEditable(false);
+    JScrollPane jsplistuser = new JScrollPane(jtextListUsers);
+    jsplistuser.setBounds(525, 25, 156, 320);
+
+    jtextListUsers.setContentType("text/html");
+    jtextListUsers.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
+
 
     // Box for user input
     jtextInputChat.setBounds(0, 350, 400, 50);
@@ -121,21 +134,16 @@ public class ClientGui extends Thread{
     connectButton.setBounds(575, 425, 100, 40);
 
     jtextFilDiscu.setBackground(Color.LIGHT_GRAY);
+    jtextListUsers.setBackground(Color.LIGHT_GRAY);
 
     jfr.add(connectButton);
     jfr.add(jtextFilDiscuSP);
+    jfr.add(jtextListUsers);
     jfr.add(passwordInput);
     jfr.add(usernameInput);
     jfr.add(portInput);
     jfr.add(addressInput);
     jfr.setVisible(true);
-
-    // When user signs in, prints chat commands in chat
-    appendToPane(jtextFilDiscu, "<h4>Chat Commands:</h4>"
-        +"<ul>"
-        +"<li>To private message user, use: <b>@nickname</b> </li>"
-        +"<li>To change username color, use: <b>#d3961b</b> </li>"
-        +"</ul><br/>");
 
     connectButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent ae) {
@@ -169,10 +177,12 @@ public class ClientGui extends Thread{
           jfr.remove(connectButton);
           jfr.add(sendMessage);
           jfr.add(jtextInputChatSP);
+          jfr.add(jtextListUsers);
           jfr.add(disconnectButton);
           jfr.revalidate();
           jfr.repaint();
           jtextFilDiscu.setBackground(Color.WHITE);
+          jtextListUsers.setBackground(Color.WHITE);
         } catch (Exception ex) {
           appendToPane(jtextFilDiscu, "<span>Could not connect to Server</span>");
           JOptionPane.showMessageDialog(jfr, ex.getMessage());
@@ -196,6 +206,7 @@ public class ClientGui extends Thread{
         jfr.repaint();
         read.interrupt();
         jtextFilDiscu.setBackground(Color.LIGHT_GRAY);
+        jtextListUsers.setBackground(Color.LIGHT_GRAY);
         appendToPane(jtextFilDiscu, "<span>Connection closed.</span>");
         output.close();
       }
@@ -275,7 +286,15 @@ public class ClientGui extends Thread{
           message = input.readLine();
           if(message != null){
             if (message.charAt(0) == '[') {
-              message = message.substring(1, message.length()-1);
+               message = message.substring(1, message.length()-1);
+               ArrayList<String> ListUser = new ArrayList<String>(
+                   Arrays.asList(message.split(", "))
+                   );
+              jtextListUsers.setText(null);
+              jtextListUsers.setText("User List: ");
+              for (String user : ListUser) {
+                appendToPane(jtextListUsers, user);
+              }
             }else{
               appendToPane(jtextFilDiscu, message);
             }

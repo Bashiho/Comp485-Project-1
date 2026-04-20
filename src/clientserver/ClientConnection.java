@@ -34,8 +34,8 @@ public class ClientConnection implements Runnable {
             passwordInput = input.readLine();
             System.out.println(verifySignin(usernameInput, passwordInput));
          }
+         broadcastAllUsers();
          String message;
-      
          while ((message = input.readLine()) != null) {
             broadcast(usernameInput + ": " + message);
          }
@@ -52,7 +52,6 @@ public class ClientConnection implements Runnable {
             client.output.println(message);
          }
       }
-   
    }
     
    public String verifySignin(String username, String password) {
@@ -106,4 +105,15 @@ public class ClientConnection implements Runnable {
       }
       return false;
    }
+   
+   public void broadcastAllUsers(){
+      for (ClientConnection client : this.clientList) {
+        client.output.println(this.clientList);
+      }
+    }
+    
+    @Override
+    public String toString() {
+        return usernameInput;
+    }
 }
